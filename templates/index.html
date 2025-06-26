@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraud Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #bbbcbf;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            width: 450px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 50px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #dcdcdc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Fraud Detection System</h1>
+        <form action="/predict" method="post">
+            <label for="type">Transaction Type:</label>
+            <select id="type" name="type" required>
+                <option value="PAYMENT">PAYMENT</option>
+                <option value="TRANSFER">TRANSFER</option>
+                <option value="CASH_OUT">CASH_OUT</option>
+                <option value="DEBIT">DEBIT</option>
+                <option value="CASH_IN">CASH_IN</option>
+            </select>
+
+            <label for="amount">Amount:</label>
+            <input type="number" id="amount" name="amount" step="0.01" required>
+
+            <label for="oldbalanceOrg">Old Balance Origin:</label>
+            <input type="number" id="oldbalanceOrg" name="oldbalanceOrg" step="0.01" required>
+
+            <label for="newbalanceOrig">New Balance Origin:</label>
+            <input type="number" id="newbalanceOrig" name="newbalanceOrig" step="0.01" required>
+
+            <label for="oldbalanceDest">Old Balance Destination:</label>
+            <input type="number" id="oldbalanceDest" name="oldbalanceDest" step="0.01" required>
+
+            <label for="newbalanceDest">New Balance Destination:</label>
+            <input type="number" id="newbalanceDest" name="newbalanceDest" step="0.01" required>
+
+            <button type="submit">Check for Fraud</button>
+        </form>
+    </div>
+</body>
+
+</html>

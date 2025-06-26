@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #bbbcbf;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            width: 450px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .result {
+            font-size: 28px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .fraud {
+            color: #e74c3c;
+        }
+
+        .no-fraud {
+            color: #2ecc71;
+        }
+
+        .probability {
+            font-size: 18px;
+            color: #7f8c8d;
+            margin-top: 10px;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            color: #3498db;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        a:hover {
+            color: #2980b9;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Prediction Result</h1>
+        {% if error %}
+        <p class="error">Error: {{ error }}</p>
+        {% else %}
+        <div class="result">
+            {% if prediction == 1 %}
+            <span class="fraud">Fraud Detected!</span>
+            {% else %}
+            <span class="no-fraud">No Fraud Detected</span>
+            {% endif %}
+        </div>
+        {% if probability is not none %}
+        <p class="probability">Fraud Probability: {{ probability|round(4) }}</p>
+        {% endif %}
+        {% endif %}
+        <a href="/">Back to Input</a>
+    </div>
+</body>
+
+</html>
