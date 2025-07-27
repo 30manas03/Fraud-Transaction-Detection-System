@@ -1,0 +1,212 @@
+{
+  "total_transactions": 1251,
+  "fraud_count": 26,
+  "safe_count": 1225,
+  "transaction_types": {
+    "PAYMENT": 457,
+    "TRANSFER": 237,
+    "CASH_OUT": 189,
+    "DEBIT": 278,
+    "CASH_IN": 90
+  },
+  "amount_ranges": {
+    "$0-100": 346,
+    "$100-500": 456,
+    "$500-1000": 237,
+    "$1000-5000": 156,
+    "$5000+": 56
+  },
+  "hourly_data": {
+    "9": {
+      "safe": 45,
+      "fraud": 1
+    },
+    "10": {
+      "safe": 67,
+      "fraud": 2
+    },
+    "11": {
+      "safe": 89,
+      "fraud": 3
+    },
+    "12": {
+      "safe": 78,
+      "fraud": 2
+    },
+    "13": {
+      "safe": 92,
+      "fraud": 4
+    },
+    "14": {
+      "safe": 85,
+      "fraud": 3
+    },
+    "15": {
+      "safe": 76,
+      "fraud": 2
+    },
+    "16": {
+      "safe": 68,
+      "fraud": 1
+    },
+    "17": {
+      "safe": 54,
+      "fraud": 2
+    },
+    "18": {
+      "safe": 42,
+      "fraud": 1
+    },
+    "19": {
+      "safe": 38,
+      "fraud": 1
+    },
+    "20": {
+      "safe": 29,
+      "fraud": 1
+    },
+    "0": {
+      "safe": 0,
+      "fraud": 0
+    },
+    "1": {
+      "safe": 0,
+      "fraud": 0
+    },
+    "2": {
+      "safe": 0,
+      "fraud": 0
+    },
+    "3": {
+      "safe": 0,
+      "fraud": 0
+    },
+    "4": {
+      "safe": 0,
+      "fraud": 0
+    },
+    "5": {
+      "safe": 0,
+      "fraud": 0
+    },
+    "6": {
+      "safe": 0,
+      "fraud": 0
+    },
+    "7": {
+      "safe": 0,
+      "fraud": 0
+    },
+    "8": {
+      "safe": 0,
+      "fraud": 0
+    },
+    "21": {
+      "safe": 0,
+      "fraud": 0
+    },
+    "22": {
+      "safe": 0,
+      "fraud": 0
+    },
+    "23": {
+      "safe": 1,
+      "fraud": 3
+    }
+  },
+  "recent_transactions": [
+    {
+      "time": "23:37",
+      "type": "TRANSFER",
+      "amount": "$1000.00",
+      "status": "Fraud",
+      "confidence": "53.5%",
+      "timestamp": "2025-07-27T23:37:20.209347"
+    },
+    {
+      "time": "23:35",
+      "type": "TRANSFER",
+      "amount": "$1000.00",
+      "status": "Fraud",
+      "confidence": "53.5%",
+      "timestamp": "2025-07-27T23:35:54.775776"
+    },
+    {
+      "time": "23:35",
+      "type": "TRANSFER",
+      "amount": "$811.00",
+      "status": "Fraud",
+      "confidence": "58.9%",
+      "timestamp": "2025-07-27T23:35:25.043024"
+    },
+    {
+      "time": "23:33",
+      "type": "PAYMENT",
+      "amount": "$100.00",
+      "status": "Safe",
+      "confidence": "0.0%",
+      "timestamp": "2025-07-27T23:33:48.707981"
+    },
+    {
+      "time": "14:32",
+      "type": "PAYMENT",
+      "amount": "$1,250.00",
+      "status": "Safe",
+      "confidence": "94.2%",
+      "timestamp": "2024-07-27T14:32:00"
+    },
+    {
+      "time": "14:28",
+      "type": "TRANSFER",
+      "amount": "$5,750.00",
+      "status": "Fraud",
+      "confidence": "87.6%",
+      "timestamp": "2024-07-27T14:28:00"
+    },
+    {
+      "time": "14:25",
+      "type": "CASH_OUT",
+      "amount": "$850.00",
+      "status": "Safe",
+      "confidence": "96.1%",
+      "timestamp": "2024-07-27T14:25:00"
+    },
+    {
+      "time": "14:22",
+      "type": "DEBIT",
+      "amount": "$320.00",
+      "status": "Safe",
+      "confidence": "91.8%",
+      "timestamp": "2024-07-27T14:22:00"
+    },
+    {
+      "time": "14:19",
+      "type": "PAYMENT",
+      "amount": "$2,100.00",
+      "status": "Safe",
+      "confidence": "93.5%",
+      "timestamp": "2024-07-27T14:19:00"
+    }
+  ],
+  "daily_volume": {
+    "2024-07-21": 156,
+    "2024-07-22": 178,
+    "2024-07-23": 192,
+    "2024-07-24": 165,
+    "2024-07-25": 203,
+    "2024-07-26": 187,
+    "2024-07-27": 166,
+    "2025-07-27": 4
+  },
+  "confidence_scores": [
+    94.2,
+    87.6,
+    96.1,
+    91.8,
+    93.5,
+    89.3,
+    95.7,
+    92.4,
+    88.9,
+    94.6,
+    

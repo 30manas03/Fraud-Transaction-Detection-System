@@ -1,100 +1,1860 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fraud Detection</title>
+    <title>Fraud Detector - AI-Powered Fraud Detection</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #bbbcbf;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-sidebar: #2c3e50;
+            --border-color: #e9ecef;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #4fc3f7;
+            --secondary-color: #66bb6a;
+            --danger-color: #ef5350;
+            --warning-color: #ffa726;
+            --text-primary: #ffffff;
+            --text-secondary: #b0bec5;
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --bg-sidebar: #1e1e1e;
+            --border-color: #404040;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
             margin: 0;
-        }
-
-        .container {
-            background-color: #ffffff;
-            padding: 25px;
-            border-radius: 30px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            width: 450px;
-        }
-
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 50px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #34495e;
-            font-weight: bold;
-        }
-
-        input,
-        select {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #dcdcdc;
-            border-radius: 5px;
+            padding: 0;
             box-sizing: border-box;
         }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: var(--transition);
+            overflow-x: hidden;
         }
 
-        button:hover {
-            background-color: #2980b9;
+        /* Navigation Bar */
+        .navbar {
+            background-color: var(--bg-primary);
+            box-shadow: var(--shadow);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('/static/logo.svg') center/contain no-repeat;
+            opacity: 0.9;
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-primary);
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--bg-secondary);
+            transform: scale(1.1);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 80px;
+            width: 250px;
+            height: calc(100vh - 80px);
+            background-color: var(--bg-sidebar);
+            padding: 2rem 0;
+            overflow-y: auto;
+            transition: var(--transition);
+            z-index: 999;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 2rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+
+        .sidebar-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            margin-top: 80px;
+            padding: 2rem;
+            min-height: calc(100vh - 80px);
+            transition: var(--transition);
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Dashboard Section */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: var(--bg-primary);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .card-icon.primary { background-color: var(--primary-color); }
+        .card-icon.success { background-color: var(--secondary-color); }
+        .card-icon.danger { background-color: var(--danger-color); }
+        .card-icon.warning { background-color: var(--warning-color); }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Form Section */
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-card {
+            background-color: var(--bg-primary);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+        }
+
+
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .navbar {
+                padding: 1rem;
+            }
+
+            .brand-name {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background-color: var(--bg-primary);
+            border-left: 4px solid var(--primary-color);
+            box-shadow: var(--shadow);
+            padding: 1rem;
+            border-radius: 8px;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left-color: var(--secondary-color);
+        }
+
+        .notification.error {
+            border-left-color: var(--danger-color);
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-title {
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .notification-message {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Enhanced Form Styles */
+        .rating-stars {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .star {
+            font-size: 1.5rem;
+            color: var(--border-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .star:hover,
+        .star.active {
+            color: var(--warning-color);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* Ripple Effect */
+        .btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Profile Info Styles */
+        .profile-info {
+            background-color: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-row:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+            border-radius: 8px;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            margin-left: -1rem;
+            margin-right: -1rem;
+        }
+
+        .info-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .info-label i {
+            width: 20px;
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .info-value {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1rem;
+            text-align: right;
+        }
+
+        /* Charts Styles */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .chart-card {
+            background-color: var(--bg-primary);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .chart-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .chart-title {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .chart-title i {
+            color: var(--primary-color);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        /* Recent Transactions Table */
+        .recent-transactions {
+            background-color: var(--bg-primary);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-top: 2rem;
+        }
+
+        .section-title {
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title i {
+            color: var(--primary-color);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .transactions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .transactions-table th,
+        .transactions-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .transactions-table th {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .transactions-table tr:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge.payment {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-color);
+        }
+
+        .badge.transfer {
+            background-color: rgba(155, 89, 182, 0.1);
+            color: #9b59b6;
+        }
+
+        .badge.cashout {
+            background-color: rgba(241, 196, 15, 0.1);
+            color: #f1c40f;
+        }
+
+        .badge.debit {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .badge.cashin {
+            background-color: rgba(52, 73, 94, 0.1);
+            color: #34495e;
+        }
+
+        .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status.safe {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .status.fraud {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+        }
+
+        /* Responsive Charts */
+        @media (max-width: 768px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-container {
+                height: 250px;
+            }
+            
+            .transactions-table {
+                font-size: 0.9rem;
+            }
+            
+            .transactions-table th,
+            .transactions-table td {
+                padding: 0.75rem 0.5rem;
+            }
+            
+            /* About Us responsive */
+            .about-grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .tech-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Fraud Detection System</h1>
-        <form action="/predict" method="post">
-            <label for="type">Transaction Type:</label>
-            <select id="type" name="type" required>
-                <option value="PAYMENT">PAYMENT</option>
-                <option value="TRANSFER">TRANSFER</option>
-                <option value="CASH_OUT">CASH_OUT</option>
-                <option value="DEBIT">DEBIT</option>
-                <option value="CASH_IN">CASH_IN</option>
-            </select>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <span class="brand-name">Fraud Detector</span>
+        </div>
+        <div class="nav-controls">
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+        </div>
+    </nav>
 
-            <label for="amount">Amount:</label>
-            <input type="number" id="amount" name="amount" step="0.01" required>
+            <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="#dashboard" class="sidebar-link active" onclick="showSection('dashboard')">
+                        <i class="fas fa-chart-line"></i>
+                        Dashboard & Analytics
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#prediction" class="sidebar-link" onclick="showSection('prediction')">
+                        <i class="fas fa-search"></i>
+                        Prediction Form
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#feedback" class="sidebar-link" onclick="showSection('feedback')">
+                        <i class="fas fa-comments"></i>
+                        Feedback
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#profile" class="sidebar-link" onclick="showSection('profile')">
+                        <i class="fas fa-user"></i>
+                        Profile Info
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#about" class="sidebar-link" onclick="showSection('about')">
+                        <i class="fas fa-info-circle"></i>
+                        About Us
+                    </a>
+                </li>
+            </ul>
+        </aside>
 
-            <label for="oldbalanceOrg">Old Balance Origin:</label>
-            <input type="number" id="oldbalanceOrg" name="oldbalanceOrg" step="0.01" required>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 style="color: var(--text-primary); margin: 0;">Dashboard & Analytics</h2>
+                <div style="display: flex; gap: 1rem;">
+                    <button onclick="loadTestData()" class="btn btn-primary" style="width: auto; padding: 8px 16px; background: linear-gradient(135deg, #2ecc71, #27ae60);">
+                        <i class="fas fa-database"></i> Load Test Data
+                    </button>
+                    <button onclick="resetAnalyticsData()" class="btn btn-primary" style="width: auto; padding: 8px 16px;">
+                        <i class="fas fa-sync-alt"></i> Reset Data
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Key Metrics Cards -->
+            <div class="dashboard">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon primary">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Total Scans</div>
+                        </div>
+                    </div>
+                    <div class="card-value" id="total-scans">0</div>
+                    <div class="card-description">Transactions analyzed today</div>
+                </div>
 
-            <label for="newbalanceOrig">New Balance Origin:</label>
-            <input type="number" id="newbalanceOrig" name="newbalanceOrig" step="0.01" required>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Fraud Detected</div>
+                        </div>
+                    </div>
+                    <div class="card-value" id="fraud-count">0</div>
+                    <div class="card-description">Suspicious transactions flagged</div>
+                </div>
 
-            <label for="oldbalanceDest">Old Balance Destination:</label>
-            <input type="number" id="oldbalanceDest" name="oldbalanceDest" step="0.01" required>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Accuracy Rate</div>
+                        </div>
+                    </div>
+                    <div class="card-value" id="accuracy-rate">0%</div>
+                    <div class="card-description">Model prediction accuracy</div>
+                </div>
 
-            <label for="newbalanceDest">New Balance Destination:</label>
-            <input type="number" id="newbalanceDest" name="newbalanceDest" step="0.01" required>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon warning">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Avg Response</div>
+                        </div>
+                    </div>
+                    <div class="card-value" id="avg-response">0.3s</div>
+                    <div class="card-description">Average processing time</div>
+                </div>
+            </div>
 
-            <button type="submit">Check for Fraud</button>
-        </form>
-    </div>
+            <!-- Charts Section -->
+            <div class="charts-container">
+                <!-- Transaction Volume Line Chart -->
+                <div class="chart-card">
+                    <h3 class="chart-title">
+                        <i class="fas fa-chart-line"></i>
+                        Transaction Volume Over Time
+                    </h3>
+                    <div class="chart-container">
+                        <canvas id="transactionVolumeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Fraud Distribution Pie Chart -->
+                <div class="chart-card">
+                    <h3 class="chart-title">
+                        <i class="fas fa-chart-pie"></i>
+                        Fraud Distribution by Type
+                    </h3>
+                    <div class="chart-container">
+                        <canvas id="fraudDistributionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Transaction Amount Histogram -->
+                <div class="chart-card">
+                    <h3 class="chart-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Transaction Amount Distribution
+                    </h3>
+                    <div class="chart-container">
+                        <canvas id="amountHistogramChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Hourly Activity Line Chart -->
+                <div class="chart-card">
+                    <h3 class="chart-title">
+                        <i class="fas fa-clock"></i>
+                        Hourly Transaction Activity
+                    </h3>
+                    <div class="chart-container">
+                        <canvas id="hourlyActivityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions Table -->
+            <div class="recent-transactions">
+                <h3 class="section-title">
+                    <i class="fas fa-list"></i>
+                    Recent Transactions
+                </h3>
+                <div class="table-container">
+                    <table class="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-transactions-body">
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: var(--text-secondary);">
+                                    No transactions yet. Start analyzing to see data here!
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feedback Section -->
+        <section id="feedback" class="content-section">
+            <h2 style="margin-bottom: 2rem; color: var(--text-primary);">Feedback</h2>
+            <div class="form-card">
+                <h3 class="form-title">Share Your Feedback</h3>
+                <form id="feedback-form">
+                    <div class="form-group">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-input" name="name" placeholder="Enter your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" name="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Rating</label>
+                        <div class="rating-stars">
+                            <i class="fas fa-star star" data-rating="1"></i>
+                            <i class="fas fa-star star" data-rating="2"></i>
+                            <i class="fas fa-star star" data-rating="3"></i>
+                            <i class="fas fa-star star" data-rating="4"></i>
+                            <i class="fas fa-star star" data-rating="5"></i>
+                        </div>
+                        <input type="hidden" name="rating" id="rating-input" value="">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-input" name="message" rows="4" placeholder="Share your thoughts..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                        Submit Feedback
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profile" class="content-section">
+            <h2 style="margin-bottom: 2rem; color: var(--text-primary);">My Profile</h2>
+            <div class="form-card">
+                <h3 class="form-title">Profile Information</h3>
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div style="width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 1rem; overflow: hidden; border: 4px solid var(--primary-color); box-shadow: 0 4px 15px rgba(0,0,0,0.2); position: relative;">
+                        <img src="/static/profile-photo.jpg" alt="Manas Nayak" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); display: none; align-items: center; justify-content: center; color: white; font-size: 2.5rem;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <h4 style="color: var(--text-primary);">Manas Nayak</h4>
+                    <p style="color: var(--text-secondary);">Cybersecurity Analyst</p>
+                </div>
+                <div class="profile-info">
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-user"></i>
+                            Full Name
+                        </div>
+                        <div class="info-value">Manas Nayak</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-envelope"></i>
+                            Email Address
+                        </div>
+                        <div class="info-value">manvamp2003@gmail.com</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-phone"></i>
+                            Phone Number
+                        </div>
+                        <div class="info-value">+91 9438753369</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-building"></i>
+                            Department
+                        </div>
+                        <div class="info-value">Cybersecurity</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-calendar-alt"></i>
+                            Join Date
+                        </div>
+                        <div class="info-value">January 15, 2024</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-chart-line"></i>
+                            Total Analyses
+                        </div>
+                        <div class="info-value">1,247</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-target"></i>
+                            Accuracy Score
+                        </div>
+                        <div class="info-value">98.2%</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prediction Form Section -->
+        <section id="prediction" class="content-section">
+            <h2 style="margin-bottom: 2rem; color: var(--text-primary);">Fraud Detection Form</h2>
+            <div class="form-container">
+                <div class="form-card">
+                    <h3 class="form-title">Transaction Analysis</h3>
+                    <form action="/predict" method="post" id="prediction-form">
+                        <div class="form-group">
+                            <label class="form-label">Transaction Type</label>
+                            <select class="form-select" name="type" required>
+                                <option value="">Select transaction type</option>
+                                <option value="PAYMENT">PAYMENT</option>
+                                <option value="TRANSFER">TRANSFER</option>
+                                <option value="CASH_OUT">CASH_OUT</option>
+                                <option value="DEBIT">DEBIT</option>
+                                <option value="CASH_IN">CASH_IN</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Amount</label>
+                            <input type="number" class="form-input" name="amount" step="0.01" placeholder="Enter transaction amount" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Old Balance Origin</label>
+                            <input type="number" class="form-input" name="oldbalanceOrg" step="0.01" placeholder="Enter old balance origin" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">New Balance Origin</label>
+                            <input type="number" class="form-input" name="newbalanceOrig" step="0.01" placeholder="Enter new balance origin" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Old Balance Destination</label>
+                            <input type="number" class="form-input" name="oldbalanceDest" step="0.01" placeholder="Enter old balance destination" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">New Balance Destination</label>
+                            <input type="number" class="form-input" name="newbalanceDest" step="0.01" placeholder="Enter new balance destination" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Analyze Transaction
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Us Section -->
+        <section id="about" class="content-section">
+            <h2 style="margin-bottom: 2rem; color: var(--text-primary);">About Us</h2>
+            
+            <!-- Hero Section -->
+            <div class="form-card" style="margin-bottom: 2rem;">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div style="width: 100%; max-width: 600px; height: 300px; border-radius: 15px; box-shadow: var(--shadow); background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); display: flex; align-items: center; justify-content: center; margin: 0 auto; position: relative; overflow: hidden;">
+                        <div style="text-align: center; color: white; z-index: 2;">
+                            <i class="fas fa-mobile-alt" style="font-size: 4rem; margin-bottom: 1rem;"></i>
+                            <h3 style="margin: 0; font-size: 1.5rem;">Payment Fraud Detection</h3>
+                            <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Mobile Transaction Security</p>
+                        </div>
+                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('/static/payment-fraud-detection.png') center/cover no-repeat, url('/static/payment-fraud-detection.jpg') center/cover no-repeat, url('/static/payment-fraud-detection.jpeg') center/cover no-repeat; opacity: 0.4;"></div>
+                    </div>
+                </div>
+                <h3 class="form-title">Fraud Detector AI</h3>
+                <div style="line-height: 1.8; color: var(--text-secondary);">
+                    <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">
+                        Welcome to Fraud Detector, an advanced AI-powered platform designed to identify and prevent fraudulent financial transactions in real-time. Our cutting-edge machine learning algorithms analyze transaction patterns to detect suspicious activities with high accuracy, protecting both businesses and consumers from financial fraud.
+                    </p>
+                    <p style="margin-bottom: 1.5rem;">
+                        In today's digital economy, payment fraud has become increasingly sophisticated, targeting mobile transactions, online payments, and traditional credit card processing. Our system provides comprehensive protection across all these channels, ensuring secure financial operations for organizations worldwide.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Fraud Detection Process -->
+            <div class="form-card" style="margin-bottom: 2rem;">
+                <h3 class="form-title" style="text-align: center; margin-bottom: 2rem;">
+                    <i class="fas fa-cogs"></i> Our Fraud Detection Process
+                </h3>
+                <div class="about-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;">
+                    <div>
+                        <div style="width: 100%; height: 300px; border-radius: 15px; box-shadow: var(--shadow); background: url('/static/fraud-detection-process.png') center/cover no-repeat, url('/static/fraud-detection-process.jpg') center/cover no-repeat, url('/static/fraud-detection-process.jpeg') center/cover no-repeat; position: relative; overflow: hidden;">
+                        </div>
+                    </div>
+                    <div style="line-height: 1.8; color: var(--text-secondary);">
+                        <p style="margin-bottom: 1.5rem; font-weight: 600; color: var(--text-primary);">Our 5-Step Detection Cycle:</p>
+                        <ol style="margin-left: 1.5rem; margin-bottom: 1.5rem;">
+                            <li style="margin-bottom: 0.75rem;"><strong style="color: var(--primary-color);">Data Warehousing:</strong> Comprehensive collection and storage of transaction data from multiple sources</li>
+                            <li style="margin-bottom: 0.75rem;"><strong style="color: var(--secondary-color);">Association Rules Creation:</strong> Advanced algorithms identify patterns and relationships between transactions</li>
+                            <li style="margin-bottom: 0.75rem;"><strong style="color: var(--warning-color);">Pattern Analysis:</strong> If/Else logic analyzes customer behavior patterns and approval trends</li>
+                            <li style="margin-bottom: 0.75rem;"><strong style="color: var(--primary-color);">Customer Authentication:</strong> Multi-factor verification and identity validation processes</li>
+                            <li style="margin-bottom: 0.75rem;"><strong style="color: var(--danger-color);">Alert Generation:</strong> Real-time notifications for suspicious activities requiring immediate attention</li>
+                        </ol>
+                        <p style="font-style: italic; color: var(--text-secondary);">
+                            This continuous cycle ensures that our system learns and adapts to new fraud patterns, providing increasingly accurate detection over time.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Features -->
+            <div class="form-card" style="margin-bottom: 2rem;">
+                <div class="about-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;">
+                    <div style="line-height: 1.8; color: var(--text-secondary);">
+                        <h3 class="form-title" style="margin-bottom: 1.5rem;">
+                            <i class="fas fa-shield-alt"></i> Advanced Security Features
+                        </h3>
+                        <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem;">
+                            <li style="margin-bottom: 0.75rem;"><strong style="color: var(--primary-color);">Real-time Analysis:</strong> Instant processing of transactions with sub-second response times</li>
+                            <li style="margin-bottom: 0.75rem;"><strong style="color: var(--secondary-color);">98.2% Accuracy Rate:</strong> Industry-leading precision in fraud detection</li>
+                            <li style="margin-bottom: 0.75rem;"><strong style="color: var(--warning-color);">Machine Learning:</strong> Self-improving algorithms that adapt to new fraud patterns</li>
+                            <li style="margin-bottom: 0.75rem;"><strong style="color: var(--danger-color);">Multi-Channel Protection:</strong> Covers mobile payments, online transactions, and card processing</li>
+                            <li style="margin-bottom: 0.75rem;"><strong style="color: var(--primary-color);">Comprehensive Analytics:</strong> Detailed insights and reporting for risk management</li>
+                            <li style="margin-bottom: 0.75rem;"><strong style="color: var(--secondary-color);">Secure Processing:</strong> End-to-end encryption and data protection</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div style="width: 100%; height: 300px; border-radius: 15px; box-shadow: var(--shadow); background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+                            <div style="text-align: center; color: white; z-index: 2;">
+                                <i class="fas fa-credit-card" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                                <h4 style="margin: 0; font-size: 1.2rem;">Credit Card Security</h4>
+                                <p style="margin: 0.5rem 0 0 0; opacity: 0.9; font-size: 0.9rem;">Secure Transaction Processing</p>
+                            </div>
+                            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('/static/credit-card-security.png') center/cover no-repeat, url('/static/credit-card-security.jpg') center/cover no-repeat, url('/static/credit-card-security.jpeg') center/cover no-repeat; opacity: 0.4;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technology Stack -->
+            <div class="form-card">
+                <h3 class="form-title" style="text-align: center; margin-bottom: 2rem;">
+                    <i class="fas fa-code"></i> Technology Stack
+                </h3>
+                <div class="tech-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                    <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 10px; text-align: center;">
+                        <i class="fas fa-python" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                        <h4 style="color: var(--text-primary); margin-bottom: 0.5rem;">Python</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Core programming language for machine learning and data processing</p>
+                    </div>
+                    <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 10px; text-align: center;">
+                        <i class="fas fa-brain" style="font-size: 2rem; color: var(--secondary-color); margin-bottom: 1rem;"></i>
+                        <h4 style="color: var(--text-primary); margin-bottom: 0.5rem;">Scikit-learn</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Advanced machine learning algorithms for pattern recognition</p>
+                    </div>
+                    <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 10px; text-align: center;">
+                        <i class="fas fa-server" style="font-size: 2rem; color: var(--warning-color); margin-bottom: 1rem;"></i>
+                        <h4 style="color: var(--text-primary); margin-bottom: 0.5rem;">Flask</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Lightweight web framework for API development</p>
+                    </div>
+                    <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 10px; text-align: center;">
+                        <i class="fas fa-chart-line" style="font-size: 2rem; color: var(--danger-color); margin-bottom: 1rem;"></i>
+                        <h4 style="color: var(--text-primary); margin-bottom: 0.5rem;">Analytics</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Real-time data visualization and reporting tools</p>
+                    </div>
+                </div>
+            </div>
+            
+
+        </section>
+    </main>
+
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
+
+    <script>
+        // Theme Toggle Functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (html.getAttribute('data-theme') === 'light') {
+                html.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                themeIcon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        const themeIcon = document.getElementById('theme-icon');
+        themeIcon.className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+
+        // Section Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+
+            // Show selected section
+            const selectedSection = document.getElementById(sectionId);
+            if (selectedSection) {
+                selectedSection.classList.add('active');
+            }
+
+            // Update sidebar active state
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            sidebarLinks.forEach(link => link.classList.remove('active'));
+            
+            const activeLink = document.querySelector(`[onclick="showSection('${sectionId}')"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+        }
+
+        // Notification System
+        function showNotification(title, message, type = 'info') {
+            const container = document.getElementById('notification-container');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            notification.innerHTML = `
+                <div class="notification-header">
+                    <span class="notification-title">${title}</span>
+                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="notification-message">${message}</div>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 300);
+            }, 5000);
+        }
+
+        // Star Rating System
+        function initializeStarRating() {
+            const stars = document.querySelectorAll('.star');
+            const ratingInput = document.getElementById('rating-input');
+            
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = this.getAttribute('data-rating');
+                    ratingInput.value = rating;
+                    
+                    // Update star display
+                    stars.forEach(s => {
+                        s.classList.remove('active');
+                        if (s.getAttribute('data-rating') <= rating) {
+                            s.classList.add('active');
+                        }
+                    });
+                });
+                
+                star.addEventListener('mouseenter', function() {
+                    const rating = this.getAttribute('data-rating');
+                    stars.forEach(s => {
+                        s.classList.remove('active');
+                        if (s.getAttribute('data-rating') <= rating) {
+                            s.classList.add('active');
+                        }
+                    });
+                });
+                
+                star.addEventListener('mouseleave', function() {
+                    const currentRating = ratingInput.value;
+                    stars.forEach(s => {
+                        s.classList.remove('active');
+                        if (s.getAttribute('data-rating') <= currentRating) {
+                            s.classList.add('active');
+                        }
+                    });
+                });
+            });
+        }
+
+        // Enhanced Form Submission
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize star rating
+            initializeStarRating();
+            
+            // Prediction form submission
+            const predictionForm = document.getElementById('prediction-form');
+            if (predictionForm) {
+                predictionForm.addEventListener('submit', function(e) {
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+                    submitBtn.disabled = true;
+                    
+                    // After form submission, update analytics
+                    setTimeout(() => {
+                        if (document.getElementById('dashboard').classList.contains('active')) {
+                            fetchAnalyticsData();
+                        }
+                    }, 2000); // Wait 2 seconds for backend to process
+                    
+                    // Re-enable after a delay (in case of error)
+                    setTimeout(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }, 10000);
+                });
+            }
+            
+            // Feedback form submission
+            const feedbackForm = document.getElementById('feedback-form');
+            if (feedbackForm) {
+                feedbackForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                    submitBtn.disabled = true;
+                    
+                    fetch('/feedback', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        showNotification('Success!', data.message, 'success');
+                        this.reset();
+                        // Reset stars
+                        document.querySelectorAll('.star').forEach(star => star.classList.remove('active'));
+                        document.getElementById('rating-input').value = '';
+                    })
+                    .catch(error => {
+                        showNotification('Error', 'Failed to submit feedback. Please try again.', 'error');
+                    })
+                    .finally(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    });
+                });
+            }
+            
+            // Add click effect to buttons
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple');
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+            
+            // Show welcome notification
+            setTimeout(() => {
+                showNotification('Welcome!', 'Fraud Detector AI dashboard loaded with test data. Start analyzing to see real-time updates!', 'success');
+            }, 1000);
+
+            // Initialize Charts
+            initializeCharts();
+            
+            // Start real-time updates if dashboard is active
+            if (document.getElementById('dashboard').classList.contains('active')) {
+                startRealTimeUpdates();
+            }
+        });
+
+
+
+        // Override theme toggle to update charts
+        const originalToggleTheme = toggleTheme;
+        toggleTheme = function() {
+            originalToggleTheme();
+            setTimeout(() => {
+                updateChartsTheme();
+            }, 300);
+        };
+
+        // Real-time Analytics Functions
+        let charts = {};
+        let updateInterval;
+        let lastNotificationCount = 0;
+        let notificationCooldown = false;
+        let isInitialLoad = true;
+
+        function updateDashboardMetrics(data) {
+            // Update metric cards
+            document.getElementById('total-scans').textContent = data.total_transactions.toLocaleString();
+            document.getElementById('fraud-count').textContent = data.fraud_count;
+            document.getElementById('accuracy-rate').textContent = data.accuracy_rate + '%';
+            document.getElementById('avg-response').textContent = data.avg_response_time + 's';
+            
+            // Set initial count on first load
+            if (isInitialLoad) {
+                lastNotificationCount = data.total_transactions;
+                isInitialLoad = false;
+                return; // Don't show notification for initial load
+            }
+            
+            // Only show notification for significant changes (new transactions added)
+            if (data.total_transactions > lastNotificationCount && !notificationCooldown) {
+                const newTransactions = data.total_transactions - lastNotificationCount;
+                if (newTransactions > 0) {
+                    showNotification('New Data Added', `${newTransactions} new transaction(s) analyzed`, 'success');
+                    notificationCooldown = true;
+                    setTimeout(() => {
+                        notificationCooldown = false;
+                    }, 5000); // 5 second cooldown
+                }
+                lastNotificationCount = data.total_transactions;
+            }
+            
+            console.log(`Dashboard updated - Total: ${data.total_transactions}, Fraud: ${data.fraud_count}`);
+        }
+
+        function updateRecentTransactions(transactions) {
+            const tbody = document.getElementById('recent-transactions-body');
+            
+            if (transactions.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--text-secondary);">
+                            No transactions yet. Start analyzing to see data here!
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = transactions.map(transaction => {
+                const badgeClass = transaction.type.toLowerCase().replace('_', '');
+                const statusClass = transaction.status.toLowerCase();
+                return `
+                    <tr>
+                        <td>${transaction.time}</td>
+                        <td><span class="badge ${badgeClass}">${transaction.type}</span></td>
+                        <td>${transaction.amount}</td>
+                        <td><span class="status ${statusClass}">${transaction.status}</span></td>
+                        <td>${transaction.confidence}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateChartsWithRealData(data) {
+            // Update transaction volume chart
+            if (charts.transactionVolume) {
+                charts.transactionVolume.data.labels = data.daily_volume.labels;
+                charts.transactionVolume.data.datasets[0].data = data.daily_volume.data;
+                charts.transactionVolume.update('none');
+            }
+
+            // Update fraud distribution chart
+            if (charts.fraudDistribution) {
+                const types = Object.keys(data.transaction_types);
+                const values = Object.values(data.transaction_types);
+                charts.fraudDistribution.data.labels = types;
+                charts.fraudDistribution.data.datasets[0].data = values;
+                charts.fraudDistribution.update('none');
+            }
+
+            // Update amount histogram
+            if (charts.amountHistogram) {
+                const ranges = Object.keys(data.amount_ranges);
+                const values = Object.values(data.amount_ranges);
+                charts.amountHistogram.data.labels = ranges;
+                charts.amountHistogram.data.datasets[0].data = values;
+                charts.amountHistogram.update('none');
+            }
+
+            // Update hourly activity chart
+            if (charts.hourlyActivity) {
+                charts.hourlyActivity.data.labels = data.hourly_data.labels;
+                charts.hourlyActivity.data.datasets[0].data = data.hourly_data.safe;
+                charts.hourlyActivity.data.datasets[1].data = data.hourly_data.fraud;
+                charts.hourlyActivity.update('none');
+            }
+        }
+
+        function fetchAnalyticsData() {
+            console.log('🔄 Fetching analytics data...');
+            fetch('/api/analytics')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('📊 Analytics data received:', data);
+                    updateDashboardMetrics(data);
+                    updateRecentTransactions(data.recent_transactions);
+                    updateChartsWithRealData(data);
+                })
+                .catch(error => {
+                    console.error('❌ Error fetching analytics data:', error);
+                    showNotification('Error', 'Failed to fetch analytics data', 'error');
+                });
+        }
+
+        function resetAnalyticsData() {
+            console.log('🔄 Resetting analytics data...');
+            const button = event.target.closest('button');
+            const originalText = button.innerHTML;
+            
+            // Show loading state
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Resetting...';
+            button.disabled = true;
+            
+            fetch('/api/reset-analytics', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('✅ Analytics data reset:', data);
+                showNotification('Data Reset', 'All analytics data has been reset to 0', 'success');
+                
+                // Reset the notification counter
+                lastNotificationCount = 0;
+                isInitialLoad = true;
+                
+                // Fetch fresh data after reset
+                setTimeout(fetchAnalyticsData, 1000);
+            })
+            .catch(error => {
+                console.error('❌ Error resetting analytics data:', error);
+                showNotification('Error', 'Failed to reset analytics data', 'error');
+            })
+            .finally(() => {
+                // Restore button state
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }, 2000);
+            });
+        }
+
+        function loadTestData() {
+            console.log('📊 Loading test data...');
+            const button = event.target.closest('button');
+            const originalText = button.innerHTML;
+            
+            // Show loading state
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+            button.disabled = true;
+            
+            fetch('/api/load-test-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('✅ Test data loaded:', data);
+                showNotification('Test Data Loaded', 'Initial test data (1247 total, 23 fraud) has been loaded', 'success');
+                
+                // Reset the notification counter
+                lastNotificationCount = 0;
+                isInitialLoad = true;
+                
+                // Fetch fresh data after loading
+                setTimeout(fetchAnalyticsData, 1000);
+            })
+            .catch(error => {
+                console.error('❌ Error loading test data:', error);
+                showNotification('Error', 'Failed to load test data', 'error');
+            })
+            .finally(() => {
+                // Restore button state
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }, 2000);
+            });
+        }
+
+
+
+        function startRealTimeUpdates() {
+            // Initial fetch
+            fetchAnalyticsData();
+            
+            // Set up interval for real-time updates
+            updateInterval = setInterval(fetchAnalyticsData, 3000); // Update every 3 seconds
+            
+            console.log('🔄 Real-time updates started');
+        }
+
+        function stopRealTimeUpdates() {
+            if (updateInterval) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+                console.log('⏹️ Real-time updates stopped');
+            }
+        }
+
+        // Enhanced Section Navigation with Analytics
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+
+            // Show selected section
+            const selectedSection = document.getElementById(sectionId);
+            if (selectedSection) {
+                selectedSection.classList.add('active');
+            }
+
+            // Update sidebar active state
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            sidebarLinks.forEach(link => link.classList.remove('active'));
+            
+            const activeLink = document.querySelector(`[onclick="showSection('${sectionId}')"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+
+            // Start/stop real-time updates based on section
+            if (sectionId === 'dashboard') {
+                startRealTimeUpdates();
+            } else {
+                stopRealTimeUpdates();
+            }
+        }
+
+        // Enhanced Chart Initialization with real data
+        function initializeCharts() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const textColor = isDark ? '#ffffff' : '#2c3e50';
+            const gridColor = isDark ? '#404040' : '#e9ecef';
+
+            // Transaction Volume Line Chart
+            const transactionVolumeCtx = document.getElementById('transactionVolumeChart');
+            if (transactionVolumeCtx) {
+                charts.transactionVolume = new Chart(transactionVolumeCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Transaction Volume',
+                            data: [],
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#3498db',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: textColor,
+                                    font: { size: 12 }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { ticks: { color: textColor }, grid: { color: gridColor } },
+                            y: { ticks: { color: textColor }, grid: { color: gridColor } }
+                        }
+                    }
+                });
+            }
+
+            // Fraud Distribution Pie Chart
+            const fraudDistributionCtx = document.getElementById('fraudDistributionChart');
+            if (fraudDistributionCtx) {
+                charts.fraudDistribution = new Chart(fraudDistributionCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            data: [],
+                            backgroundColor: ['#3498db', '#9b59b6', '#f1c40f', '#2ecc71', '#34495e'],
+                            borderWidth: 2,
+                            borderColor: isDark ? '#2d2d2d' : '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: textColor,
+                                    font: { size: 11 },
+                                    padding: 15
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Transaction Amount Histogram
+            const amountHistogramCtx = document.getElementById('amountHistogramChart');
+            if (amountHistogramCtx) {
+                charts.amountHistogram = new Chart(amountHistogramCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Number of Transactions',
+                            data: [],
+                            backgroundColor: [
+                                'rgba(52, 152, 219, 0.8)',
+                                'rgba(46, 204, 113, 0.8)',
+                                'rgba(241, 196, 15, 0.8)',
+                                'rgba(155, 89, 182, 0.8)',
+                                'rgba(231, 76, 60, 0.8)'
+                            ],
+                            borderColor: ['#3498db', '#2ecc71', '#f1c40f', '#9b59b6', '#e74c3c'],
+                            borderWidth: 2,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: textColor,
+                                    font: { size: 12 }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { ticks: { color: textColor }, grid: { color: gridColor } },
+                            y: { ticks: { color: textColor }, grid: { color: gridColor } }
+                        }
+                    }
+                });
+            }
+
+            // Hourly Activity Line Chart
+            const hourlyActivityCtx = document.getElementById('hourlyActivityChart');
+            if (hourlyActivityCtx) {
+                charts.hourlyActivity = new Chart(hourlyActivityCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Safe Transactions',
+                            data: [],
+                            borderColor: '#2ecc71',
+                            backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4
+                        }, {
+                            label: 'Fraudulent Transactions',
+                            data: [],
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: textColor,
+                                    font: { size: 12 }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { ticks: { color: textColor }, grid: { color: gridColor } },
+                            y: { ticks: { color: textColor }, grid: { color: gridColor } }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Update charts when theme changes
+        function updateChartsTheme() {
+            // Destroy existing charts
+            Object.values(charts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+            charts = {};
+            
+            // Reinitialize charts with new theme
+            setTimeout(() => {
+                initializeCharts();
+                // Fetch fresh data after reinitializing
+                if (document.getElementById('dashboard').classList.contains('active')) {
+                    fetchAnalyticsData();
+                }
+            }, 100);
+        }
+    </script>
 </body>
 
 </html>

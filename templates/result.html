@@ -1,94 +1,486 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prediction Result</title>
+    <title>Prediction Result - Fraud Detector</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-sidebar: #2c3e50;
+            --border-color: #e9ecef;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #4fc3f7;
+            --secondary-color: #66bb6a;
+            --danger-color: #ef5350;
+            --warning-color: #ffa726;
+            --text-primary: #ffffff;
+            --text-secondary: #b0bec5;
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --bg-sidebar: #1e1e1e;
+            --border-color: #404040;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #bbbcbf;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: var(--transition);
+            min-height: 100vh;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background-color: var(--bg-primary);
+            box-shadow: var(--shadow);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('/static/logo.svg') center/contain no-repeat;
+            opacity: 0.9;
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-primary);
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--bg-secondary);
+            transform: scale(1.1);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            padding: 2rem;
+            min-height: calc(100vh - 80px);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
         }
 
-        .container {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 30px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            width: 450px;
+        .result-container {
+            background-color: var(--bg-primary);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: var(--shadow);
             text-align: center;
+            max-width: 500px;
+            width: 100%;
+            animation: slideIn 0.5s ease-out;
         }
 
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 20px;
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .result {
-            font-size: 28px;
-            margin: 20px 0;
+        .result-header {
+            margin-bottom: 2rem;
+        }
+
+        .result-title {
+            font-size: 2rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .result-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .result-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            margin: 0 auto 1.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        .result-icon.fraud {
+            background: linear-gradient(135deg, var(--danger-color), #c0392b);
+        }
+
+        .result-icon.no-fraud {
+            background: linear-gradient(135deg, var(--secondary-color), #27ae60);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .result-message {
+            font-size: 1.8rem;
             font-weight: bold;
+            margin-bottom: 1rem;
         }
 
-        .fraud {
-            color: #e74c3c;
+        .result-message.fraud {
+            color: var(--danger-color);
         }
 
-        .no-fraud {
-            color: #2ecc71;
+        .result-message.no-fraud {
+            color: var(--secondary-color);
         }
 
         .probability {
-            font-size: 18px;
-            color: #7f8c8d;
-            margin-top: 10px;
+            background-color: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
         }
 
-        .error {
-            color: #e74c3c;
+        .probability-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .probability-value {
+            font-size: 1.5rem;
             font-weight: bold;
-            font-size: 18px;
+            color: var(--primary-color);
         }
 
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            color: #3498db;
+        .error-message {
+            background-color: rgba(231, 76, 60, 0.1);
+            border: 2px solid var(--danger-color);
+            border-radius: 10px;
+            padding: 1rem;
+            color: var(--danger-color);
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
             text-decoration: none;
-            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        a:hover {
-            color: #2980b9;
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .transaction-details {
+            background-color: var(--bg-secondary);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+
+        .transaction-details h4 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .brand-name {
+                font-size: 1.2rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .result-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Prediction Result</h1>
-        {% if error %}
-        <p class="error">Error: {{ error }}</p>
-        {% else %}
-        <div class="result">
-            {% if prediction == 1 %}
-            <span class="fraud">Fraud Detected!</span>
-            {% else %}
-            <span class="no-fraud">No Fraud Detected</span>
-            {% endif %}
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <span class="brand-name">Fraud Detector</span>
         </div>
-        {% if probability is not none %}
-        <p class="probability">Fraud Probability: {{ probability|round(4) }}</p>
-        {% endif %}
-        {% endif %}
-        <a href="/">Back to Input</a>
-    </div>
+        <div class="nav-controls">
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="result-container">
+            <div class="result-header">
+                <h1 class="result-title">Analysis Complete</h1>
+                <p class="result-subtitle">Transaction has been analyzed using AI</p>
+            </div>
+
+            {% if error %}
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                Error: {{ error }}
+            </div>
+            {% else %}
+            <div class="result-icon {% if prediction == 1 %}fraud{% else %}no-fraud{% endif %}">
+                {% if prediction == 1 %}
+                <i class="fas fa-exclamation-triangle"></i>
+                {% else %}
+                <i class="fas fa-check-circle"></i>
+                {% endif %}
+            </div>
+
+            <div class="result-message {% if prediction == 1 %}fraud{% else %}no-fraud{% endif %}">
+                {% if prediction == 1 %}
+                Fraud Detected!
+                {% else %}
+                No Fraud Detected
+                {% endif %}
+            </div>
+
+            {% if probability is not none %}
+            <div class="probability">
+                <div class="probability-label">Fraud Probability</div>
+                <div class="probability-value">{{ (probability * 100)|round(2) }}%</div>
+            </div>
+            {% endif %}
+
+            <!-- Transaction Details -->
+            <div class="transaction-details">
+                <h4><i class="fas fa-info-circle"></i> Transaction Summary</h4>
+                <div class="detail-row">
+                    <span class="detail-label">Type:</span>
+                    <span class="detail-value">{{ request.form.get('type', 'N/A') }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Amount:</span>
+                    <span class="detail-value">${{ "%.2f"|format(request.form.get('amount', 0)|float) }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Origin Balance:</span>
+                    <span class="detail-value">${{ "%.2f"|format(request.form.get('oldbalanceOrg', 0)|float) }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Destination Balance:</span>
+                    <span class="detail-value">${{ "%.2f"|format(request.form.get('oldbalanceDest', 0)|float) }}</span>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="action-buttons">
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    New Analysis
+                </a>
+                <a href="/dashboard" class="btn btn-secondary">
+                    <i class="fas fa-chart-line"></i>
+                    View Dashboard
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Theme Toggle Functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (html.getAttribute('data-theme') === 'light') {
+                html.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                themeIcon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        const themeIcon = document.getElementById('theme-icon');
+        themeIcon.className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click effect to buttons
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple');
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
