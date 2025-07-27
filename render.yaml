@@ -2,11 +2,9 @@ services:
   - type: web
     name: fraud-detection-app
     env: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install --only-binary=all -r requirements.txt
     startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.10
       - key: PYTHONPATH
         value: /opt/render/project/src
     plan: free 
