@@ -95,7 +95,7 @@ fraud_detection/
 
 The application uses the following environment variables:
 - `PORT`: Port number (automatically set by Render)
-- `PYTHON_VERSION`: Python version (set to 3.11.7)
+- `PYTHON_VERSION`: Python version (set to 3.11.5)
 - `PYTHONPATH`: Python path (set to /opt/render/project/src)
 
 ## API Endpoints
