@@ -3,8 +3,10 @@ services:
     name: fraud-detection-app
     env: python
     buildCommand: pip install --prefer-binary -r requirements.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
     envVars:
       - key: PYTHONPATH
         value: /opt/render/project/src
+      - key: FLASK_ENV
+        value: production
     plan: free 

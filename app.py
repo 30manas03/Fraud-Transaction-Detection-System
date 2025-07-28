@@ -227,7 +227,9 @@ def update_analytics_data(transaction_data, prediction, probability):
         analytics_data['daily_volume'][current_date] += 1
         
         # Update confidence scores
-        analytics_data['confidence_scores'].append(probability if probability else 0.5)
+        # Convert numpy float32 to regular float for JSON serialization
+        prob_value = float(probability) if probability is not None else 0.5
+        analytics_data['confidence_scores'].append(prob_value)
         if len(analytics_data['confidence_scores']) > 100:  # Keep only last 100 scores
             analytics_data['confidence_scores'] = analytics_data['confidence_scores'][-100:]
         
@@ -237,7 +239,7 @@ def update_analytics_data(transaction_data, prediction, probability):
             'type': transaction_type,
             'amount': f"${amount:.2f}",
             'status': 'Fraud' if prediction == 1 else 'Safe',
-            'confidence': f"{probability * 100:.1f}%" if probability else "N/A",
+            'confidence': f"{float(probability) * 100:.1f}%" if probability is not None else "N/A",
             'timestamp': datetime.now().isoformat()
         }
         
@@ -529,6 +531,13 @@ def predict():
         return render_template('result.html', error=f"Prediction failed: {str(e)}")
 
 if __name__ == '__main__':
+    # Ensure static files directory exists
+    import os
+    static_dir = os.path.join(os.path.dirname(__file__), 'static')
+    if not os.path.exists(static_dir):
+        os.makedirs(static_dir)
+        print(f"Created static directory: {static_dir}")
+    
     app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
 
 
