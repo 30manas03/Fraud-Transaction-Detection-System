@@ -1,6 +1,6 @@
 Flask==2.3.3
 pandas==2.0.3
-scikit-learn==1.4.0
+scikit-learn==1.6.1
 numpy==1.26.2
 Werkzeug==2.3.7
 gunicorn==21.2.0
