@@ -112,7 +112,12 @@ def load_analytics_data():
                 # Convert back to defaultdict
                 analytics_data['transaction_types'] = defaultdict(int, data.get('transaction_types', {}))
                 analytics_data['amount_ranges'] = defaultdict(int, data.get('amount_ranges', {}))
-                analytics_data['hourly_data'] = defaultdict(lambda: {'safe': 0, 'fraud': 0}, data.get('hourly_data', {}))
+                # Convert hourly_data keys back to integers for proper indexing
+                hourly_data = data.get('hourly_data', {})
+                analytics_data['hourly_data'] = defaultdict(lambda: {'safe': 0, 'fraud': 0})
+                for hour_str, hour_data in hourly_data.items():
+                    hour_int = int(hour_str)
+                    analytics_data['hourly_data'][hour_int] = hour_data
                 analytics_data['daily_volume'] = defaultdict(int, data.get('daily_volume', {}))
                 analytics_data['total_transactions'] = data.get('total_transactions', 0)
                 analytics_data['fraud_count'] = data.get('fraud_count', 0)
@@ -137,7 +142,7 @@ def save_analytics_data():
             'safe_count': analytics_data['safe_count'],
             'transaction_types': dict(analytics_data['transaction_types']),
             'amount_ranges': dict(analytics_data['amount_ranges']),
-            'hourly_data': dict(analytics_data['hourly_data']),
+            'hourly_data': {str(k): dict(v) for k, v in analytics_data['hourly_data'].items()},
             'recent_transactions': analytics_data['recent_transactions'],
             'daily_volume': dict(analytics_data['daily_volume']),
             'confidence_scores': analytics_data['confidence_scores']
@@ -233,14 +238,17 @@ def update_analytics_data(transaction_data, prediction, probability):
         if len(analytics_data['confidence_scores']) > 100:  # Keep only last 100 scores
             analytics_data['confidence_scores'] = analytics_data['confidence_scores'][-100:]
         
-        # Update recent transactions
+        # Update recent transactions with proper time formatting
+        current_time = datetime.now()
+        # Format time in 24-hour format with timezone awareness
+        time_str = current_time.strftime('%H:%M')
         recent_transaction = {
-            'time': datetime.now().strftime('%H:%M'),
+            'time': time_str,
             'type': transaction_type,
             'amount': f"${amount:.2f}",
             'status': 'Fraud' if prediction == 1 else 'Safe',
             'confidence': f"{float(probability) * 100:.1f}%" if probability is not None else "N/A",
-            'timestamp': datetime.now().isoformat()
+            'timestamp': current_time.isoformat()
         }
         
         analytics_data['recent_transactions'].insert(0, recent_transaction)
