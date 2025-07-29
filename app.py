@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, jsonify
 import pandas as pd
 import pickle
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 from collections import defaultdict
 
@@ -238,9 +238,9 @@ def update_analytics_data(transaction_data, prediction, probability):
         if len(analytics_data['confidence_scores']) > 100:  # Keep only last 100 scores
             analytics_data['confidence_scores'] = analytics_data['confidence_scores'][-100:]
         
-        # Update recent transactions with proper time formatting
-        current_time = datetime.now()
-        # Format time in 24-hour format with timezone awareness
+        # Update recent transactions with proper local timezone handling
+        current_time = datetime.now()  # Use local time for display
+        # Format time in 24-hour format using local time
         time_str = current_time.strftime('%H:%M')
         recent_transaction = {
             'time': time_str,
@@ -248,7 +248,7 @@ def update_analytics_data(transaction_data, prediction, probability):
             'amount': f"${amount:.2f}",
             'status': 'Fraud' if prediction == 1 else 'Safe',
             'confidence': f"{float(probability) * 100:.1f}%" if probability is not None else "N/A",
-            'timestamp': current_time.isoformat()
+            'timestamp': current_time.isoformat()  # Store with local timezone info
         }
         
         analytics_data['recent_transactions'].insert(0, recent_transaction)
@@ -259,7 +259,7 @@ def update_analytics_data(transaction_data, prediction, probability):
         # Save analytics data after each update
         save_analytics_data()
         
-        print(f"📊 Analytics updated - Total: {analytics_data['total_transactions']}, Fraud: {analytics_data['fraud_count']}, Type: {transaction_type}, Amount: ${amount:.2f}")
+        print(f"📊 Analytics updated - Total: {analytics_data['total_transactions']}, Fraud: {analytics_data['fraud_count']}, Type: {transaction_type}, Amount: ${amount:.2f}, Time: {time_str}")
         
     except Exception as e:
         print(f"❌ Error updating analytics: {e}")
@@ -532,8 +532,8 @@ def predict():
         # Update analytics data
         update_analytics_data(data, prediction, probability)
 
-        # Render result page
-        return render_template('result.html', prediction=prediction, probability=probability)
+        # Render result page with success parameter
+        return render_template('result.html', prediction=prediction, probability=probability, success=True)
 
     except Exception as e:
         return render_template('result.html', error=f"Prediction failed: {str(e)}")

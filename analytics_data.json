@@ -1,10 +1,10 @@
 {
-  "total_transactions": 1248,
-  "fraud_count": 24,
+  "total_transactions": 1247,
+  "fraud_count": 23,
   "safe_count": 1224,
   "transaction_types": {
     "PAYMENT": 456,
-    "TRANSFER": 235,
+    "TRANSFER": 234,
     "CASH_OUT": 189,
     "DEBIT": 278,
     "CASH_IN": 90
@@ -12,7 +12,7 @@
   "amount_ranges": {
     "$0-100": 345,
     "$100-500": 456,
-    "$500-1000": 235,
+    "$500-1000": 234,
     "$1000-5000": 156,
     "$5000+": 56
   },
@@ -64,65 +64,9 @@
     "20": {
       "safe": 29,
       "fraud": 1
-    },
-    "0": {
-      "safe": 0,
-      "fraud": 0
-    },
-    "1": {
-      "safe": 0,
-      "fraud": 1
-    },
-    "2": {
-      "safe": 0,
-      "fraud": 0
-    },
-    "3": {
-      "safe": 0,
-      "fraud": 0
-    },
-    "4": {
-      "safe": 0,
-      "fraud": 0
-    },
-    "5": {
-      "safe": 0,
-      "fraud": 0
-    },
-    "6": {
-      "safe": 0,
-      "fraud": 0
-    },
-    "7": {
-      "safe": 0,
-      "fraud": 0
-    },
-    "8": {
-      "safe": 0,
-      "fraud": 0
-    },
-    "21": {
-      "safe": 0,
-      "fraud": 0
-    },
-    "22": {
-      "safe": 0,
-      "fraud": 0
-    },
-    "23": {
-      "safe": 0,
-      "fraud": 0
     }
   },
   "recent_transactions": [
-    {
-      "time": "01:57",
-      "type": "TRANSFER",
-      "amount": "$811.00",
-      "status": "Fraud",
-      "confidence": "58.9%",
-      "timestamp": "2025-07-29T01:57:59.059247+05:30"
-    },
     {
       "time": "14:32",
       "type": "PAYMENT",
@@ -171,8 +115,7 @@
     "2024-07-24": 165,
     "2024-07-25": 203,
     "2024-07-26": 187,
-    "2024-07-27": 166,
-    "2025-07-29": 1
+    "2024-07-27": 166
   },
   "confidence_scores": [
     94.2,
@@ -184,7 +127,6 @@
     95.7,
     92.4,
     88.9,
-    94.6,
-    0.5888711810112
+    94.6
   ]
 }
