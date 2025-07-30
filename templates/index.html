@@ -899,7 +899,6 @@
                     <table class="transactions-table">
                         <thead>
                             <tr>
-                                <th>Time</th>
                                 <th>Type</th>
                                 <th>Amount</th>
                                 <th>Status</th>
@@ -1476,7 +1475,7 @@
             if (transactions.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="5" style="text-align: center; color: var(--text-secondary);">
+                        <td colspan="4" style="text-align: center; color: var(--text-secondary);">
                             No transactions yet. Start analyzing to see data here!
                         </td>
                     </tr>
@@ -1489,7 +1488,6 @@
                 const statusClass = transaction.status.toLowerCase();
                 return `
                     <tr>
-                        <td>${transaction.time}</td>
                         <td><span class="badge ${badgeClass}">${transaction.type}</span></td>
                         <td>${transaction.amount}</td>
                         <td><span class="status ${statusClass}">${transaction.status}</span></td>
